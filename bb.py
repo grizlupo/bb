@@ -5,12 +5,12 @@ from tokenize import *
 
 __version__ = '0.1.0'
 
-def bookmark(filename, isdouble=False):
+def bookmark(filename, isdouble=False, strict=True):
     name, ext = os.path.splitext(filename)
     if ext.lower() == '.pdf':
         filename = name
     
-    merger = PdfFileMerger()
+    merger = PdfFileMerger(strict=strict)
     merger.append(open(filename + '.pdf', 'rb'), import_bookmarks=False)
     
     toc = open(filename + '.toc', 'rb')
@@ -70,11 +70,15 @@ def main():
     parser.add_argument('-d', '--double', action='store_const',
             const=True, default=False,
             help='real two pages in pdf one page')
+    parser.add_argument('--strict', action='store_true', default=True,
+            help='process pdf in strict mode')
+    parser.add_argument('--nostrict', dest='strict', action='store_false')
 
     args = parser.parse_args()
+    print(args)
     if args.pdf:
         print('build', args.pdf, 'bookmark edition')
-        bookmark(args.pdf, args.double)
+        bookmark(args.pdf, args.double, args.strict)
         
         
 if __name__ == '__main__':
